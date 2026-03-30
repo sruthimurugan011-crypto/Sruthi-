@@ -1,31 +1,33 @@
+import streamlit as st
 import itertools
 
-# Function to evaluate logical expression
+st.set_page_config(page_title="Truth Table Generator")
+
+st.title("🧠 Truth Table Generator")
+
+# Input from user
+expr = st.text_input("Enter logical expression (use and, or, not):", "A and B")
+
+# Function to evaluate expression
 def evaluate_expression(expr, values, variables):
     local_dict = dict(zip(variables, values))
     return eval(expr, {}, local_dict)
 
-# Input logical expression
-expr = input("Enter logical expression (use and, or, not): ")
+if expr:
+    # Extract variables
+    variables = sorted(set([char for char in expr if char.isalpha()]))
 
-# Extract variables (like A, B, C)
-variables = sorted(set([char for char in expr if char.isalpha()]))
+    st.write("### Variables:", variables)
 
-print("\nTruth Table:\n")
+    # Generate truth table
+    table = []
+    for values in itertools.product([0, 1], repeat=len(variables)):
+        bool_values = [bool(v) for v in values]
+        result = evaluate_expression(expr, bool_values, variables)
+        table.append(list(values) + [int(result)])
 
-# Print header
-for var in variables:
-    print(var, end=" ")
-print("| Result")
+    # Display table
+    st.write("### Truth Table")
 
-# Generate all combinations
-for values in itertools.product([0, 1], repeat=len(variables)):
-    bool_values = [bool(v) for v in values]
-    
-    # Evaluate result
-    result = evaluate_expression(expr, bool_values, variables)
-    
-    # Print row
-    for v in values:
-        print(v, end=" ")
-    print("|", int(result))
+    headers = variables + ["Result"]
+    st.table([headers] + table)
