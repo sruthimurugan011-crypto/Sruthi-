@@ -5,28 +5,27 @@ def evaluate_expression(expr, values, variables):
     local_dict = dict(zip(variables, values))
     return eval(expr, {}, local_dict)
 
-# Input from user
+# Input logical expression
 expr = input("Enter logical expression (use and, or, not): ")
 
-# Extract variables (A, B, C...)
+# Extract variables (like A, B, C)
 variables = sorted(set([char for char in expr if char.isalpha()]))
 
-print("\nVariables:", variables)
-
-# Generate combinations (0,1)
-combinations = list(itertools.product([0, 1], repeat=len(variables)))
+print("\nTruth Table:\n")
 
 # Print header
-print("\nTruth Table:")
-print(" | ".join(variables) + " | Output")
-print("-" * (len(variables)*4 + 10))
+for var in variables:
+    print(var, end=" ")
+print("| Result")
 
-# Generate table
-for values in combinations:
+# Generate all combinations
+for values in itertools.product([0, 1], repeat=len(variables)):
     bool_values = [bool(v) for v in values]
+    
+    # Evaluate result
     result = evaluate_expression(expr, bool_values, variables)
     
-    # Convert True/False to 1/0
-    result = int(result)
-    row = " | ".join(map(str, values)) + " | " + str(result)
-    print(row)
+    # Print row
+    for v in values:
+        print(v, end=" ")
+    print("|", int(result))
